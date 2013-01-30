@@ -20,7 +20,7 @@
 		{
 			"matches": ["http://boards.straightdope.com/sdmb/showthread.php*"],
 			"css": ["styles/showthread.css"],
-			"js": ["scripts/jquery.js", "scripts/showthread.js"]
+			"js": ["scripts/jquery-1.9.0.min.js", "scripts/showthread.js"]
 		}
 	],
 
