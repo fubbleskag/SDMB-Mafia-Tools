@@ -1,0 +1,32 @@
+{
+
+	"manifest_version": 2,
+
+	"name": "SDMB Mafia Tools",
+	"description": "Mafia-related tools for the Straight Dope Message Board",
+	"version": "2.0",
+
+	"background": { "scripts": ["background.js"] },
+
+	"page_action": {
+		"default_icon": {
+			"19": "icon-19.png",
+			"38": "icon-38.png"
+		},
+		"default_title": "Show the SDMB Mafial Toolbar"
+	},
+
+	"content_scripts": [
+		{
+			"matches": ["http://boards.straightdope.com/sdmb/showthread.php*"],
+			"css": ["showthread.css"],
+			"js": ["jquery.js", "showthread.js"]
+		}
+	],
+
+	"permissions": [
+		"tabs",
+		"storage"
+	]
+
+}
