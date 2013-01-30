@@ -1,57 +1,102 @@
 jQuery(document).ready(function($){
 
-	$('body').mtbFilters();
+	storage = chrome.storage.local; // Prepare storage object
 
-	/* Get stored options */
+	mtbInit(); // Prepare the toolbar
 
-		storage = chrome.storage.local;
-		mtbOptions = {};
-		storage.get('mtbOptions', function(values){ mtbOptions = values.mtbOptions; });
-		//storage.set( { 'mtbOptions': mtbOptions } );
-
-	/* Build the Toolbar */
-
-		mafiaToolbar = $('<div id="mafiaToolbar">');
-		mafiaToolbar.html("Toolbar!");
-		mafiaToolbar.hide();
-		$('body').prepend(mafiaToolbar);
-
-	/* Toggle the Toolbar */
-
-		chrome.extension.onMessage.addListener(function(request, sender, sendResponse){
-			if (request.greeting == "toggleToolbar") {
-				mafiaToolbar.slideToggle(400);
-			}
-		});
-
-	/* Load other pages of thread in the background */
-
-		/*
-		allPosts = $('<div id="allPosts">');
-		allPosts.hide();
-		$('#posts').after(allPosts);
-		lastPage = $('.vbmenu_control:contains("Page")').html().split(' ').pop();
-		baseURL = $('#posts').prev().find('a.smallfont').attr('href').split('&page=')[0];
-		for (currentPage = 1; currentPage <= lastPage; currentPage++) {
-			allPosts.append('<div class="posts" id="page-'+currentPage+'">');
-			url = baseURL + '&page=' + currentPage;
-			$('#page-' + currentPage).load(url+' #posts > div', function(data){
-				$('#allPosts').mtbFilters();
-			});
-		}
-		*/
+	mtbPageAction(); // Toggle toolbar when page action icon clicked
 
 });
 
-/* Functions */
+function mtbInit() {
 
-	// Convert text to a className-friendly format
+	console.log("Toolbar initializing...");
 
-		function formatUsername(username) {
-			return username.toLowerCase().replace(" ", "_").replace(/[!\"#$%&'\(\)\*\+,\.\/:;<=>\?\@\[\\\]\^`\{\|\}~]/g, '');
+	// Add empty toolbar to the DOM
+
+		mafiaToolbar = $('<div id="mafiaToolbar">');
+		mafiaToolbar.hide();
+		$('body').prepend(mafiaToolbar);
+
+	// Check if toolbar has been previously enabled
+
+		storage.get('mtbVisible', function(values){
+			if (values.mtbVisible) {
+				mtbShow();
+			}
+		});
+
+}
+
+function mtbPageAction() {
+
+	// Listen for request from the page action button to toggle the toolbar
+
+		chrome.extension.onMessage.addListener(function(request, sender, sendResponse){
+			if (request.greeting == "toggleToolbar") {
+				if ( $('#mafiaToolbar').is(':visible') ) {
+					mtbHide();
+				} else {
+					mtbShow();
+				}
+			}
+		});
+
+}
+
+function mtbShow() {
+
+	console.log("Toolbar activated.");
+
+	// Display the toolbar
+
+		mafiaToolbar = $('#mafiaToolbar');
+		mafiaToolbar.html("Toolbar!");
+		mafiaToolbar.show(500);
+		storage.set( { 'mtbVisible': true } );
+
+	// Add filter classes to current page's posts
+
+		$('#posts').mtbFilters();
+
+	// Load posts from all thread's pages in background, adding filter classes
+
+		if ( $('#allPosts').length == 0 ) {
+			allPosts = $('<div id="allPosts">');
+			allPosts.hide();
+			$('#posts').after(allPosts);
+			lastPage = $('.vbmenu_control:contains("Page")').html().split(' ').pop();
+			baseURL = $('#posts').prev().find('a.smallfont').attr('href').split('&page=')[0];
+			for (currentPage = 1; currentPage <= lastPage; currentPage++) {
+				console.log("Retrieving Page " + currentPage + " of " + lastPage);
+				allPosts.append('<div class="posts" id="page-'+currentPage+'">');
+				url = baseURL + '&page=' + currentPage;
+				$('#page-' + currentPage).load(url+' #posts > div', function(data){
+					console.log( "Loaded " + $(data).find('.vbmenu_control:contains("Page")')[0].innerHTML );
+					$('#allPosts').mtbFilters();
+				});
+			}
 		}
 
-/* jQuery Extendsions */
+}
+
+function mtbHide() {
+
+	console.log("Toolbar deactivated.");
+
+	// Hide the toolbar
+
+		mafiaToolbar = $('#mafiaToolbar');
+		mafiaToolbar.hide(500);
+		storage.set( { 'mtbVisible': false } );
+
+}
+
+function formatUsername(username) {
+	return username.toLowerCase().replace(" ", "_").replace(/[!\"#$%&'\(\)\*\+,\.\/:;<=>\?\@\[\\\]\^`\{\|\}~]/g, '');
+}
+
+/* jQuery Extensions */
 
 	// .mtbFilters()
 
