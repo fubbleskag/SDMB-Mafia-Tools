@@ -1,5 +1,3 @@
-/* Comment test */
-
 jQuery(document).ready(function($){
 
 	$('body').mtbFilters();
@@ -10,7 +8,6 @@ jQuery(document).ready(function($){
 		mtbOptions = {};
 		storage.get('mtbOptions', function(values){ mtbOptions = values.mtbOptions; });
 		//storage.set( { 'mtbOptions': mtbOptions } );
-
 
 	/* Build the Toolbar */
 
@@ -29,6 +26,7 @@ jQuery(document).ready(function($){
 
 	/* Load other pages of thread in the background */
 
+		/*
 		allPosts = $('<div id="allPosts">');
 		allPosts.hide();
 		$('#posts').after(allPosts);
@@ -41,38 +39,50 @@ jQuery(document).ready(function($){
 				$('#allPosts').mtbFilters();
 			});
 		}
+		*/
 
 });
 
-function formatUsername(username) {
-	return username.toLowerCase().replace(" ", "_").replace(/[!\"#$%&'\(\)\*\+,\.\/:;<=>\?\@\[\\\]\^`\{\|\}~]/g, '');
-}
+/* Functions */
 
-jQuery.fn.extend({
-	'mtbFilters': function(){
-		$(this).find('td.thead:containsNC("Advertisements")').closest('div[align="center"]').remove();
-		$(this).find('table[id^="post"]').each(function(index){
-			// General utility tag
-				var post = $(this).closest('div[align="center"]');
-				post.addClass('mtb-post');
-			// Username
-				var username = formatUsername($(this).find('a.bigusername').html());
-				post.addClass('mtb-' + username);
-			// Online status
-				var status = $(this).find('a.bigusername').next('img').attr('src').match(/(on|off)line/);
-				post.addClass('mtb-' + status[0]);
-			// (Un)votes
-				var votes = $(this).find('font[color*="blue"]:containsNC("vote"):not("div.smallfont + table font"), b:containsNC("vote"):not("div.smallfont + table b"):not(b:containsNC("unvote"))');
-				var unvotes = $(this).find('font[color*="red"]:containsNC("unvote"):not("div.smallfont + table font"), b:containsNC("unvote"):not("div.smallfont + table b")');
-				if ( votes.length ) post.addClass('mtb-vote');
-				if ( unvotes.length ) post.addClass('mtb-unvote');
+	// Convert text to a className-friendly format
+
+		function formatUsername(username) {
+			return username.toLowerCase().replace(" ", "_").replace(/[!\"#$%&'\(\)\*\+,\.\/:;<=>\?\@\[\\\]\^`\{\|\}~]/g, '');
+		}
+
+/* jQuery Extendsions */
+
+	// .mtbFilters()
+
+		jQuery.fn.extend({
+			'mtbFilters': function(){
+				// Kill advertisements
+					$(this).find('td.thead:containsNC("Advertisements")').closest('div[align="center"]').remove();
+				// Add filter classes to posts
+					$(this).find('table[id^="post"]').each(function(index){
+						// General utility tag
+							var post = $(this).closest('div[align="center"]');
+							post.addClass('mtb-post');
+						// Username
+							var username = formatUsername($(this).find('a.bigusername').html());
+							post.addClass('mtb-' + username);
+						// Online status
+							var status = $(this).find('a.bigusername').next('img').attr('src').match(/(on|off)line/);
+							post.addClass('mtb-' + status[0]);
+						// (Un)votes
+							var votes = $(this).find('font[color*="blue"]:containsNC("vote"):not("div.smallfont + table font"), b:containsNC("vote"):not("div.smallfont + table b"):not(b:containsNC("unvote"))');
+							var unvotes = $(this).find('font[color*="red"]:containsNC("unvote"):not("div.smallfont + table font"), b:containsNC("unvote"):not("div.smallfont + table b")');
+							if ( votes.length ) post.addClass('mtb-vote');
+							if ( unvotes.length ) post.addClass('mtb-unvote');
+					});
+			}
 		});
 
-	}
-});
+	// :containsNC
 
-jQuery.expr[":"].containsNC = $.expr.createPseudo(function(arg) {
-	return function( elem ) {
-		return $(elem).text().toUpperCase().indexOf(arg.toUpperCase()) >= 0;
-	};
-});
+		jQuery.expr[":"].containsNC = $.expr.createPseudo(function(arg) {
+			return function( elem ) {
+				return $(elem).text().toUpperCase().indexOf(arg.toUpperCase()) >= 0;
+			};
+		});
