@@ -1,3 +1,5 @@
+/* Comment test */
+
 jQuery(document).ready(function($){
 
 	$('body').mtbFilters();
