@@ -61,7 +61,7 @@ function mtbShow() {
 
 	// Load posts from all thread's pages in background, adding filter classes
 
-		if ( $('#allPosts').length == 0 ) {
+		/*if ( $('#allPosts').length == 0 ) {
 			allPosts = $('<div id="allPosts">');
 			allPosts.hide();
 			$('#posts').after(allPosts);
@@ -76,7 +76,7 @@ function mtbShow() {
 					$('#allPosts').mtbFilters();
 				});
 			}
-		}
+		}*/
 
 }
 
